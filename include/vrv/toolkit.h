@@ -603,6 +603,30 @@ public:
     std::string GetMIDIValuesForElement(const std::string &xmlId);
 
     /**
+     * Return the MIDI pitch of the element with the ID (\@xml:id).
+     *
+     * Unlike GetMIDIValuesForElement this computes only the sounding pitch and
+     * skips the (expensive) time/duration lookup, so it is cheap to call for
+     * every note of a score.
+     *
+     * @param xmlId the ID (\@xml:id) of the element being looked for
+     * @return the MIDI pitch, or -1 if the element is not found or not a note
+     */
+    int GetMIDIPitchForElement(const std::string &xmlId);
+
+    /**
+     * Return the MIDI pitch of every note in the document as a JSON object
+     * keyed by \@xml:id.
+     *
+     * Unlike GetMIDIValuesForElement (which resolves one id per call and also
+     * computes time/duration), this iterates the document once, so it is cheap
+     * to call once for a whole score.
+     *
+     * @return A stringified JSON object mapping \@xml:id to MIDI pitch
+     */
+    std::string GetAllMIDIPitches();
+
+    /**
      * Return a JSON object string with the following key values for a given note.
      *
      * Return scoreTimeOnset, scoreTimeOffset, scoreTimeTiedDuration,

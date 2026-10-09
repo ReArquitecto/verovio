@@ -2188,6 +2188,43 @@ std::string Toolkit::GetMIDIValuesForElement(const std::string &xmlId)
     return o.json();
 }
 
+int Toolkit::GetMIDIPitchForElement(const std::string &xmlId)
+{
+    this->SetMidiDoc();
+    this->ResetLogBuffer();
+
+    assert(m_midiDoc);
+    Object *element = m_midiDoc->FindDescendantByID(xmlId);
+
+    if (!element) {
+        LogWarning("Element '%s' not found", xmlId.c_str());
+        return -1;
+    }
+
+    if (element->Is(NOTE)) {
+        Note *note = vrv_cast<Note *>(element);
+        assert(note);
+        return note->GetMIDIPitch();
+    }
+    return -1;
+}
+
+std::string Toolkit::GetAllMIDIPitches()
+{
+    this->SetMidiDoc();
+    this->ResetLogBuffer();
+
+    assert(m_midiDoc);
+    jsonxx::Object o;
+    ListOfObjects notes = m_midiDoc->FindAllDescendantsByType(NOTE);
+    for (Object *obj : notes) {
+        Note *note = vrv_cast<Note *>(obj);
+        assert(note);
+        o << note->GetID() << note->GetMIDIPitch();
+    }
+    return o.json();
+}
+
 void Toolkit::SetHumdrumBuffer(const char *data)
 {
     this->ClearHumdrumBuffer();

@@ -177,6 +177,19 @@ const char *vrvToolkit_getMIDIValuesForElement(void *tkPtr, const char *xmlId)
     return tk->GetCString();
 }
 
+int vrvToolkit_getMIDIPitchForElement(void *tkPtr, const char *xmlId)
+{
+    Toolkit *tk = static_cast<Toolkit *>(tkPtr);
+    return tk->GetMIDIPitchForElement(xmlId);
+}
+
+const char *vrvToolkit_getAllMIDIPitches(void *tkPtr)
+{
+    Toolkit *tk = static_cast<Toolkit *>(tkPtr);
+    tk->SetCString(tk->GetAllMIDIPitches());
+    return tk->GetCString();
+}
+
 const char *vrvToolkit_getNotatedIdForElement(void *tkPtr, const char *xmlId)
 {
     Toolkit *tk = static_cast<Toolkit *>(tkPtr);
