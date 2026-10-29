@@ -97,6 +97,13 @@ public:
     ///@}
 
     /**
+     * Return the top staff's top line and the bottom staff's bottom line
+     * (absolute Y-up page coordinates, internal units). Returns false when the
+     * system has no visible staff.
+     */
+    bool GetStaffSpan(int &topY, int &bottomY) const;
+
+    /**
      * Return the minimus system spacing
      */
     int GetMinimumSystemSpacing(const Doc *doc) const;

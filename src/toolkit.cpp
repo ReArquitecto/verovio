@@ -38,11 +38,13 @@
 #include "note.h"
 #include "options.h"
 #include "page.h"
+#include "pages.h"
 #include "runtimeclock.h"
 #include "score.h"
 #include "slur.h"
 #include "staff.h"
 #include "svgdevicecontext.h"
+#include "system.h"
 #include "timemap.h"
 #include "vrv.h"
 
@@ -2022,6 +2024,41 @@ bool Toolkit::RenderToExpansionMapFile(const std::string &filename)
 int Toolkit::GetPageCount()
 {
     return m_doc.GetPageCount();
+}
+
+std::string Toolkit::GetSystemBounds(int pageNo)
+{
+    this->ResetLogBuffer();
+
+    jsonxx::Object o;
+    jsonxx::Array systems;
+
+    Pages *pages = m_doc.GetPages();
+    if (!pages) return o.json();
+
+    Page *page = dynamic_cast<Page *>(pages->GetChild(pageNo - 1));
+    if (!page) return o.json();
+
+    // Verovio lays out Y-up (top of page has the larger Y) in internal units
+    // (DEFINITION_FACTOR per SVG pixel). The SVG output is Y-down in MEI
+    // pixels, offset by the page margin, so flip + offset + scale each
+    // system's staff span (top staff top line to bottom staff bottom line).
+    const int contentHeight = m_doc.m_drawingPageContentHeight;
+    const int marginTop = m_doc.m_drawingPageMarginTop;
+    for (Object *child : page->GetChildren()) {
+        if (!child->Is(SYSTEM)) continue;
+        System *system = vrv_cast<System *>(child);
+        int topY = 0;
+        int bottomY = 0;
+        if (!system->GetStaffSpan(topY, bottomY)) continue;
+        jsonxx::Object s;
+        s << "y" << ((marginTop + contentHeight - topY) / DEFINITION_FACTOR);
+        s << "height" << ((topY - bottomY) / DEFINITION_FACTOR);
+        systems << s;
+    }
+
+    o << "systems" << systems;
+    return o.json();
 }
 
 std::string Toolkit::GetDescriptiveFeatures(const std::string &options)

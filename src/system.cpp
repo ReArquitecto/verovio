@@ -159,6 +159,23 @@ const Staff *System::GetTopVisibleStaff(bool includeOssia) const
     return NULL;
 }
 
+bool System::GetStaffSpan(int &topY, int &bottomY) const
+{
+    const StaffAlignment *topAlignment = NULL;
+    const StaffAlignment *bottomAlignment = NULL;
+    for (auto child : m_systemAligner.GetChildren()) {
+        const StaffAlignment *alignment = vrv_cast<const StaffAlignment *>(child);
+        if (!alignment || !alignment->GetStaff()) continue;
+        if (alignment->GetStaff()->IsOssia()) continue;
+        if (!topAlignment) topAlignment = alignment;
+        bottomAlignment = alignment;
+    }
+    if (!topAlignment || !bottomAlignment) return false;
+    topY = this->GetDrawingY() + topAlignment->GetYRel();
+    bottomY = this->GetDrawingY() + bottomAlignment->GetYRel() - bottomAlignment->GetStaffHeight();
+    return true;
+}
+
 int System::GetMinimumSystemSpacing(const Doc *doc) const
 {
     const auto &spacingSystem = doc->GetOptions()->m_spacingSystem;

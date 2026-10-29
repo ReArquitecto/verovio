@@ -217,6 +217,13 @@ int vrvToolkit_getPageCount(void *tkPtr)
     return tk->GetPageCount();
 }
 
+const char *vrvToolkit_getSystemBounds(void *tkPtr, int pageNo)
+{
+    Toolkit *tk = static_cast<Toolkit *>(tkPtr);
+    tk->SetCString(tk->GetSystemBounds(pageNo));
+    return tk->GetCString();
+}
+
 int vrvToolkit_getPageWithElement(void *tkPtr, const char *xmlId)
 {
     Toolkit *tk = static_cast<Toolkit *>(tkPtr);

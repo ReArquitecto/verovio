@@ -198,6 +198,12 @@ public:
     ///@}
 
     /**
+     * Return a JSON array of the page's system bounds (SVG `y` + `height` for
+     * each system, top-to-bottom). `pageNo` is 1-based.
+     */
+    std::string GetSystemBounds(int pageNo);
+
+    /**
      **************************************************************************
      * @name Getter and setter for options
      **************************************************************************
